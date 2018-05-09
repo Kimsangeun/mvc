@@ -12,7 +12,7 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 public class BoardDAO {
-	
+	//루루루룰루루
 	Connection con = null;
 	PreparedStatement ptmt = null;
 	ResultSet rs = null;
