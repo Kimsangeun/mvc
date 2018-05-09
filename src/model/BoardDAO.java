@@ -23,6 +23,8 @@ public class BoardDAO {
 		Context init;
 		
 		try {
+			
+			//룰루루루루루루룰루룰루루루루루루ㅜㄹ
 			init = new InitialContext();
 			DataSource ds = (DataSource)init.lookup("java:comp/env/oooo");
 		
