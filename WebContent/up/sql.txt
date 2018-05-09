@@ -1,0 +1,32 @@
+db SQL
+
+DDL - create, alter, drop 
+
+DML - select, insert, delete, update
+
+DCL - commit, rollback, grant(권한부여), revoke(권한취소)
+
+
+alter table stud add(tel varchar2(50)); (컬럼 추가)
+alter table stud rename column id to dd; (컬럼명 변경)
+alter table stud modify(id varchar2(100)); (속성변경)
+alter table stud drop(id); (컬럼 제거)
+
+
+select id,pw from stud;  (선택한 컬럼에 해당하는 행출력)
+
+insert into stud(id, pw) values('aaa','1111'); (행 삽입)
+
+delete from stud where id = 'aaa'; (해당 행제거)
+
+update stud set pw = '1111' where id = 'aaa';  (where조건을 걸지 않으면 모든 행이 업데이트됨)
+
+
+
+
+
+
+
+
+
+distinct (중복제거)

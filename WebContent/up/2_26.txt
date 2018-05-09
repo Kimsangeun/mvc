@@ -1,0 +1,30 @@
+create table student(
+name varchar2(100),
+age number,
+gender varchar2(10),
+birth date
+);
+
+alter table student add(tel varchar2(50));
+
+alter table student modify(tel number);
+
+alter table student rename column tel to phone; 
+
+alter table student drop column phone;
+
+drop table student;
+
+SELECT * FROM tab;
+
+drop table stud;
+
+create table stud(
+id varchar2(10),
+name varchar2(10),
+birth date,
+tel varchar2(11),
+email varchar2(100),
+regdate date,
+grade number
+);

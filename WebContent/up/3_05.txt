@@ -1,0 +1,233 @@
+구조 
+데이터베이스 > 파일 > 테이블 > 레코드 > 속성
+
+인덱스 테이블 스페이스
+
+테이블 스페이스 - 테이블이 저장되는 공간
+
+드라이버설치
+C:\oraclexe\app\oracle\product\11.2.0\server\jdbc\lib
+
+dbms 는 db의 한 종류
+
+그 중 java와 연동을 위해 데이터베이스에 연결 및 작업을 하기 위한 자바 표준 인터페이스이다
+
+JDBC란 Java DataBase Connectivity
+
+
+JDBC 프로그램 실행순서
+
+ 
+
+//1. JDBC 드라이버 로딩                        
+
+           //  Class.forName("oracle.jdbc.driver.OracleDriver");
+ //2. 데이터베이스 커넥션 시도   
+
+           //  Connection con= DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe",id,pw);
+//3. 쿼리문을 실행하기위한 객체생성
+
+           // Statement stmt=con.createStatement();
+//4. 쿼리 실행
+
+           // ResultSet rs=stmt.executeQuery(sql);
+//5. 쿼리 실행 결과 사용
+
+          //  while(rs.next())
+             //      rs.getString("name")   
+//6. 쿼리문 실행객체 종료
+
+           // if(rs!=null) try {rs.close(); } catch(Exception e){}//실행결과 닫기
+          //if(stmt!=null) try {stmt.close(); } catch(Exception e){}//실행객체 닫기
+//7. 데이터베이스 커넥션 종료
+
+         //if(con!=null) try {con.close(); } catch(Exception e){}//커넥션 닫기
+
+
+
+
+자바프로젝트에 lib폴더 만들고 ojdbc6복사하기
+자바프로젝트 마우스 오른쪽 
+Build Path -> Configure Build Path -> Libraries -> Add jars클릭
+아까 복사한ojdbc6 추가하기
+
+
+
+stud와exam묶어서 성적표형태로 출력하기
+
+
+
+
+
+<<<<<<<<<<<<<hr>>>>>>>>>>>>>>....
+
+
+
+
+--0305
+select * from user_tab_privs; --기능이 제한적임
+
+select * from user_tab_privs_Recd;
+
+create table exam(
+    title varchar2(50),
+    kor number,
+    eng number,
+    mat number
+);
+
+select * from exam;
+
+create user st2 identified by wwww; 
+--system에서 권한을 주기 전까지 생성되지않음 (유저만드는 권한이 없다.)
+
+create user st3 identified by eeee;
+
+select stud.*, kor, eng, mat,
+kor+eng+mat sum ,
+(kor+eng+mat)/3 avg from stud,exam
+where stud.id = exam.sid;
+
+create or replace view deathPaper
+as
+select stud.*, kor, eng, mat,
+kor+eng+mat sum ,
+(kor+eng+mat)/3 avg from stud,exam
+where stud.id = exam.sid;
+
+insert into deathPaper 
+(id, name, kor, eng, mat) values ('fff','김성광',77,88,99);
+
+create or replace view examRes
+as
+select exam.*, kor+eng+mat sum ,
+(kor+eng+mat)/3 avg 
+from exam
+with read only; --읽기 전용 수정안됨
+
+select * from examRes;
+
+insert into examRes 
+(id, title,sid, kor, eng, mat) values (9,'중간','aaa','김성광',77,88,99);
+
+drop view examRes;
+
+--교수와 학과를 같이 보여주는 view를 생성하시오
+alter table depart add(major varchar2(50));
+
+insert into depart values('현빈','p11','컴퓨터공학과');
+insert into depart values('원빈','p12','컴퓨터공학과');
+insert into depart values('투빈','p13','물리학과');
+insert into depart values('김우빈','p14','수학과');
+insert into depart values('미스터빈','p15','수학과');
+
+drop view profe;
+
+create or replace view profe
+as
+select professor.*, major
+from professor, depart
+where professor.pid = depart.pid;
+
+select * from profe;
+
+
+create index idx_stud_id on stud(id);
+
+select id from stud;
+
+select max(id) from stud;
+
+create index idx_employees
+on employees(employ_id);
+
+drop index idx_stud_id; --더 빠른 검색이 가능할떄 내용변경이 별로 없을때
+
+select * from stud where id >='aaa' and id<='ddd';
+
+select *from stud where id like '%a%';
+
+select id,name email from stud
+where id>='bbb' and id<='fff'
+order by id
+;
+
+ select exam.*,stud.*, 
+kor+eng+mat sum, round((kor+eng+mat)/3) avg
+from exam, stud 
+where stud.id=exam.sid
+order by title desc;
+
+
+
+<<<<<<<<<<<system>>>>>>>>>>>>>
+
+
+create user st1 identified by qqqq; --테이블에 다른 사용자를 추가함
+
+select * from all_users;
+
+select * from DBA_SYS_PRIVS;
+
+select * from user_tab_privs; --내가 가진 권한
+
+select * from role_tab_privs;
+select * from user_role_privs;
+
+select * from dba_sys_privs where grantee='HR'; --남에게 줄수있 권한
+
+grant connect, resource to st1; --st1에게 권한을 줌
+
+grant create user to st1; --st1에게 유저생성 권한을 줌
+
+revoke create user from st1; --st1에대한 유저생성 권한을 뺌
+
+drop user st1; --계정 삭제 불가
+
+drop user st1 cascade; --접속을 끊은 후 사용 
+--cascade는 계정과 연관된 내용을 모두 지울 때 사용
+
+select * from dba_tablespaces; --최소용량 최대용량
+
+select * from user_tables;
+select * from tabs; --같은거
+
+select distinct tablespace_name from tabs;
+
+select * from dba_data_files; --사용가능한 공간 확인
+
+select *from user_segments; --테이블 용량 확인
+
+select tablespace_name, sum(bytes),max(bytes) from dba_free_space
+group by tablespace_name;
+
+create tablespace jhta 
+datafile 'C:\ORACLEXE\APP\ORACLE\ORADATA\XE\jhta.dbf'
+size 100m;
+
+create user jhta identified by aaaa; --계정만들기
+
+grant resource, connect to jhta; --권한부여
+
+alter user jhta default tablespace jhta; 
+
+drop user jhta cascade;
+
+create user ksk identified by aaaa;
+
+grant resource, connect to ksk;
+
+alter user ksk default tablespace jhta;
+
+select * from user_tables;-- where tablespace_name = 'JHTA';
+
+
+
+<<<<<<<<<<<<<ksk>>>>>>>>>>>>
+
+create table member(
+    id varchar2(20),
+    age number(5)
+);
+
+select * from user_tables;

@@ -1,0 +1,157 @@
+SYSTEM 쿼리창
+
+select * from DBA_cons_COLUMNS where owner = 'HR';
+
+
+
+HR 쿼리창
+
+select to_char(123.456,'00000.0000') from dual; --0은 나머지 자리를 0으로 채움
+select to_char(123.456,'99999.9999') from dual; --9는 앞자리 생략
+select to_char(12345678.456,'9,99,99.9999') from dual;
+select to_char(12347.3456,'9,99,99.9999') from dual;
+
+select to_number('1,23,47.456','9,99,99.9999') from dual; --문자열을 숫자로
+
+select exam.*,nvl(kor,0)+eng+mat sum from exam; --nvl : null값을 0으로 바꿔서 계산
+
+select stud.*,
+decode(grade,1,'미화부',2,'선도부',3,'체육부') --함수
+from stud;
+
+select exam.*,
+case
+    when kor>=90 THEN '수'
+    when kor>=80 THEN '우'
+    when kor>=70 THEN '미'
+    when kor>=60 THEN '양'
+    else '가' 
+end
+from exam;
+
+select exam.*,(nvl(kor,0)+nvl(mat,0)+nvl(eng,0)) sum, round((nvl(kor,0)+nvl(mat,0)+nvl(eng,0))/3,2) avg,
+case
+    when (nvl(kor,0)+nvl(mat,0)+nvl(eng,0))/3 >=90 then '수'
+    when (nvl(kor,0)+nvl(mat,0)+nvl(eng,0))/3 >=80 then '우'
+    when (nvl(kor,0)+nvl(mat,0)+nvl(eng,0))/3 >=70 then '미'
+    when (nvl(kor,0)+nvl(mat,0)+nvl(eng,0))/3 >=60 then '양'
+    else '가'
+end
+from exam;
+
+select *from stud ;--두개의 테이블을 함께 출력할 수 있다.
+select *from stud, exam where stud.id = sid; 
+
+create table cutline(jumsu number, title varchar2(100));
+
+insert all
+into cutline(title,jumsu) values ('중간', 70)
+into cutline(title,jumsu) values ('기말', 80)
+select * from dual;
+
+
+select *from cutline,exam where exam.title = cutline.title;
+
+select*from cutline,exam
+where exam.title = cutline.title and jumsu<=kor;
+
+alter table stud add(fr varchar2(100));
+
+--select * from stud where fr=id;
+select me.*,ff.name from stud me, stud ff where me.fr=ff.id;--ccc는 null값이므로 빠져있다.
+select me.*,ff.name from stud me, stud ff where me.fr=ff.id(+);
+
+--내 정보와 친구의 이름, 내 시험정보의 국어, 영어, 수학 총점, 쳥균을 출력해주세요.
+select me.*,ff.name, exam.*, (nvl(kor,0)+nvl(mat,0)+nvl(eng,0)) sum,round((nvl(kor,0)+nvl(mat,0)+nvl(eng,0))/3) avg 
+from stud me, stud ff,exam
+where me.fr=ff.id and me.id=sid;
+
+--그룹함수
+select sum(kor), avg(kor), max(kor), min(kor) , count(kor),
+sum(eng), avg(mat), max(title), min(sid), count(kor) --문자열에도 min max함수가 가능하다.
+from exam; 
+
+select title,sum(kor) from exam
+group by title;
+
+select title, sum(kor) from exam --먼저 필터링하고 필터링한 애들을 묶는것
+where kor >=60
+group by title;
+
+select sid, avg(eng) from exam --먼저 묶고 필터링
+group by sid
+having avg(eng)>=85;
+
+select*from exam where kor >=svg(kor);
+
+select sid, avg(eng) from exam
+group by sid;
+
+select stud.* , avg(eng) from stud, exam--그룹함수를 사용한 테이블은 묶어서 출력인데 일반 테이블은 단순질의이므로 둘이 합칠수 없다.
+group by sid;
+
+select avg(kor) from exam;
+
+select *from exam
+where kor >= 73.6;
+
+select *from exam
+where kor >= (select avg(kor) from exam);
+
+select*from stud
+where id in(
+select sid from exam
+group by sid
+having avg(eng)>=85
+);
+
+select max(id)+1 from exam;
+
+insert into exam (id, title, sid, kor, eng, mat,regdate) values
+(7,'중간','eee',56,67,78,'2017-05-06');
+
+insert into exam (id, title, sid, kor, eng, mat,regdate) values
+((select max(id)+1 from exam),'중간','fff',56,67,78,'2017-05-06');
+
+--서브쿼리
+select * from(
+select rownum rnum, tt.* from --rownum : 번호를 무작위로 매김(정렬x)
+(select exam.*,(nvl(kor,0)+nvl(mat,0)+nvl(eng,0)) sum, round((kor+eng+mat)/3,1) AVG
+from exam
+order by (nvl(kor,0)+nvl(mat,0)+nvl(eng,0)) desc) tt) --tt table생성
+where rnum <=3;
+
+
+--제약조건
+create table professor(
+    pid varchar2(50) constraint pro_pk primary key,
+    name varchar2(50) constraint pro_name_nnull not null,
+    phone varchar2(50) constraint pro_phone_uni unique,
+    addr varchar2(50)
+);
+
+drop table professor;--system table에 난장판됨
+
+alter table professor drop constraint pro_name_nnull;
+alter table professor modify name constraint pro_name_nn not null;
+
+alter table professor drop constraint pro_phone_uni;
+alter table professor ADD constraint pro_phone_uni unique(phone);
+
+-- 외래키설정 참조
+create table depart( 
+    name varchar2(50),
+    pid varchar2(50) constraint deFk references professor(pid) 
+);
+
+--check 사용 : 데이터를 검사하여 특정 조건에 맞는 데이터만 입력하도록 설정 한다.
+alter table exam add constraint exam_ch_kor check(kor>=0 and kor<=100);
+
+insert into professor values('p11','현빈','123','');
+insert into professor values('p12','원빈','456','');
+insert into professor values('p13','투빈','789','');
+commit;
+insert into professor values('p14','김우빈','100','');
+insert into professor values('p15','미스터빈','200','');
+
+rollback; --이전 실행문 취소 (commit전까지는 취소되지 않음)

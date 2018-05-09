@@ -1,0 +1,64 @@
+뷰페이지가 갤러리형탸로 화면이 이미지당 다섯개당 한줄 다 나오게 파일에 반드시 이미지파일이 들어가야한다.
+
+서블렛 List.java 로 실행 ->
+galleryDAO.java 에서 list()메소드의 디비불러와서  galleryList.jsp로 이동 wt뿌려줌 ->
+
+불러온 디비는 이미지파일들  클릭하면 GalleryDetail.java 서블릿이 실행 
+<a href="../gallery.GalleryDetail?picture=     ">이 클릭한이미지 상세페이지로 이동할 수 있게한다.
+
+서블릿 GalleryDetail.java는 GalleryDAO.java 에서 detail()메소드의 디비불러와서 뿌려줌->
+
+galleryDetail.jsp로 이동해서 사진과 내용 보여줌
+
+
+=글 등록=
+
+galleryList.jsp에서 '글 등록하기'누르면 writing.jsp 페이지로 이동->
+
+글 작성 후 확인버튼 누르면 서블릿 GalleryWriteReg.java로 이동->
+
+서블릿 GalleryWriteReg.java에서 GalleryDAO.java에서 write()메소드사용 디비에 저장함->
+
+alert.jsp에서 확인 후 서블릿에서 지정한 url List로 이동!
+
+
+=글 삭제=
+
+상세페이지에서 '글 삭제하기'누르면 서블릿 GalleryDelete.java 로 이동->
+
+GalleryDelete.java에서 GallertDAO.java 에서 delete()메소드사용 디비에서 행삭제->
+(여기서 폴더의 이미지도 같이 삭제해준다.)
+
+삭제 후 List로 이동!
+
+
+글지울때 같이 삭제하는거
+
+이미지파일만 올라가게하는거
+
+
+
+=글 수정=
+
+상세페이지에서 '글 수정하기'누르면 서블릿 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,181 @@
+create table stud(
+id varchar2(10),
+name varchar2(30),
+birth date,
+tel varchar2(50),
+email varchar2(100),
+regdate date,
+grade number
+);
+
+insert into stud (id, name, birth, grade) values ('aaa','장동건','1990-03-20',2);
+
+insert into stud --insert값을 안줄땐 비워놓으면 안됨
+values ('bbb','장서건','2002-03-20','010-1111-1111','bbb@aa.com','2018-02-26',2);
+
+insert all 
+into stud (id,birth,name,grade) values ('ccc','2011-03-22','장남건',2)
+into stud (id,birth,name,grade) values ('ddd','2011-11-30','북두신건',2)
+into stud (id,birth,name,grade) values ('fff','2011-07-13','한가인',2)
+into stud (id,birth,name,grade) values ('eee','2011-03-02','두가인',2)
+select * from dual;
+
+update stud set tel='010-2222-2222'; --모든 값이 변경됨
+
+update stud set tel = '010-3333-3333' where id = 'aaa';
+update stud set tel = '010-4444-4444',email = 'ccc@naver.com' where id = 'ccc';
+
+delete from stud where id = 'ddd';
+
+select * from stud;
+
+select * from stud where regdate is not null;
+
+--exam테이블을 생성하고
+--aaa,ccc,ddd의 중간고사 성적을 입력하세요
+--aaa,ddd,zzz의 기말고사 성적을 입력하세요
+create table exam(
+no number,
+title varchar2(20),
+sid varchar2(20),
+kor number,
+eng number,
+mat number,
+regdate date
+);
+
+insert all
+into exam (no, title, sid, kor, eng, mat,  regdate)values (1,'중간','aaa',70,87,77,'2018-05-20')
+into exam (no, title, sid, kor, eng, mat, regdate) values (2,'중간','ccc',78,99,83,'2018-05-20')
+into exam (no, title, sid, kor, eng, mat, regdate) values (3,'중간','ddd',64,68,56,'2018-05-20')
+into exam (no, title, sid, kor, eng, mat, regdate) values (1,'기말','aaa',69,95,72,'2018-08-27')
+into exam (no, title, sid, kor, eng, mat, regdate) values (3,'기말','ddd',100,92,99,'2018-08-27')
+into exam (no, title, sid, kor, eng, mat, regdate) values (7,'기말','zzz',82,49,85,'2018-08-27')
+select * from dual;
+
+select kor from exam;
+select title, sid, kor from exam;
+
+select title, sid, kor+100,kor-50,kor*2,kor/5 from exam; --기본연산이 가능하다
+
+select title,sid,kor+100 as "국 어" from exam;
+
+select sid, kor || '점' from exam; --한 열에 합쳐서 출력
+
+select DISTINCT tel,id from stud; --중복제거하고 출력
+
+select DISTINCT id from stud;
+
+select *from exam where title = '중간';
+
+select *from exam where kor<=80;
+select *from exam where kor<80;
+select *from exam where kor=80;
+
+select *from exam where title!='중간'; 
+select * from exam where title <> '중간'; --값이 들어간 행은 출력하지 않는다.
+
+select *from stud where name = '장%'; --안됨;
+
+select *from stud where name like '장%';
+select *from stud where name like '%인';
+select *from stud where name like '%가%';
+
+select *from exam where title = '중간' and kor>=90;
+select *from exam where title = '중간' or kor>=90;
+--select *from exam where title = '중간' && kor>=90;
+
+select *from exam where sid = 'aaa' or sid='ccc';
+
+select *from exam where sid in ('aaa','ccc'); --값이 포함된 행을 모두 출력
+
+select *from exam where kor BETWEEN 70 and 80;
+
+select *from exam where not kor >=80;
+
+select *from exam where kor is not null; --null이 없는 행을 출력
+select *from exam where kor is null;
+
+select *from exam order by kor; --오름차순
+select *from exam order by kor desc; --내림차순
+select *from exam order by kor asc; --오름차순 asc쓰나마나
+
+select *from exam order by title desc,kor ; --title은 오름차순 kor은 내림차순
+
+select *from exam
+where no <=4 
+order by title desc, kor desc
+;
+
+
+---exam을 이용하여 총점, 평균까지 출력하세요. 단 sid가 존재하는 것만
+----출력순서 title 내림차순, sid 오름차순
+select exam.*,kor+eng+mat as sum, trunc((kor+eng+mat)/3) as avg from exam --trunc는 소수점없애기
+where kor is not null
+order by title desc, sid asc;
+
+
+select 1234 from dual;
+
+select round(15.193,1) "Round" FROM DUAL; --소수몇째자리까지 반올림
+select round(15.1111,1) "Round" FROM DUAL;
+select trunc(15.193,1) "Round" FROM DUAL; --소수 몇째자리에서 그냥자름
+
+select mod(15,6) FROM DUAL;
+
+select upper('aBcD EfG') FROM DUAL; --대문자로 출력
+select lower('aBcD EfG') FROM DUAL; --소문자로 출력
+select initcap('aBcD EfG') FROM DUAL; --첫글자대문자 나머지 소문자
+select name,length(name) from stud;
+select instr('aBcD EfG','c') FROM DUAL;
+select instr('aBcD EcfcG','c',4,2) from dual;
+
+select substr('aBcD EcfcG',2,4) from dual; --substring출력
+select substr('aBcD EcfcG',-4,2) from dual;
+
+select lpad('aBcD EcfcG',20,'#') from dual; --문자열 길이를 늘려라
+select rpad('aBcD EcfcG',20,'#') from dual;
+select ltrim('---------aB cD---------','-') from dual;
+select rtrim('---------aB cD---------','-') from dual;
+select trim('         aB cD        ') from dual; --비어있는 공간만 없앨수있다.
+
+select sysdate from dual;
+select sysdate-1 from dual; --1일전(자동연산)
+select sysdate+100 from dual; --100일뒤
+
+select birth, months_between(sysdate, birth) from stud; --몇달이 지났는지 
+select birth, months_between(sysdate, birth)/12 from stud; --만나이
+
+select birth, add_months(birth,6) from stud; --6개월 뒤가 며칠인지
+select birth, last_day(birth) from stud; --달의 마지막날(윤달계산가능)
+
+select sysdate, next_day(sysdate,'화') from dual; --오늘로부터 다음 화요일
+
+
+----성년인 사람의 정보를 출력하세요 성년:만19세
+select name,birth, trunc(months_between(sysdate,birth)/12)  from stud --trunk 소수점없애기
+where (months_between(sysdate,birth)/12) >=19
+;
+
+update stud set birth = '1988-09-05' where id='eee';
+
+select *from stud where birth >= '2000-1-1';
+
+--select '2020-1-1'-birth from stud; --산술연산 불가
+select sysdate-birth from stud; --산술연산 가능
+
+select to_date('2020-1-1','yyyy-mm-dd')-birth from stud; -- 산술연산 가능
+
+select birth, TO_CHAR(birth,'yyyy') from stud; --연도값만 가져옴
+
+---2003年 10月 23日 (월) 14:23:15 형식으로 출력
+select to_char(sysdate,'yyyy')||'年 ' --sysdate는 현재
+|| to_char(sysdate,'mm')||'月 '
+||to_char(sysdate,'dd')||'日 ('
+||to_char(sysdate,'dy')||') '
+--||to_char(sysdate,'hh24')||':'
+--||to_char(sysdate,'mi')||':'
+--||to_char(sysdate,'ss')
+||to_char(sysdate,'hh24:mi:ss')
+from dual;
+
